@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Attendance Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Student Attendance Management System</h1>
+        <nav>
+            <ul>
+                <li><a href="#add-student">Add Student</a></li>
+                <li><a href="#record-attendance">Record Attendance</a></li>
+                <li><a href="#view-attendance">View Attendance</a></li>
+            </ul>
+        </nav>
+        <div id="add-student" class="section">
+            <h2>Add Student</h2>
+            <form id="add-student-form">
+                <input type="text" id="student-name" placeholder="Student Name" required>
+                <input type="text" id="student-roll" placeholder="Roll Number" required>
+                <button type="submit">Add Student</button>
+            </form>
+            <div id="student-list-container">
+                <h2>Current Students</h2>
+                <ul id="student-list"></ul>
+            </div>
+        </div>
+        <div id="record-attendance" class="section hidden">
+            <h2>Record Attendance</h2>
+            <form id="attendance-form">
+                <div id="student-checkboxes"></div>
+                <button type="submit">Submit Attendance</button>
+            </form>
+        </div>
+        <div id="view-attendance" class="section hidden">
+            <h2>Attendance Records</h2>
+            <button id="clear-attendance">Clear Attendance Records</button>
+            <table id="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Roll Number</th>
+                        <th>Name</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="attendance-records"></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
