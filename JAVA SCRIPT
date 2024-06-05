@@ -1,0 +1,116 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const addStudentForm = document.getElementById('add-student-form');
+    const studentNameInput = document.getElementById('student-name');
+    const studentRollInput = document.getElementById('student-roll');
+    const studentList = document.getElementById('student-list');
+    const studentCheckboxes = document.getElementById('student-checkboxes');
+    const attendanceForm = document.getElementById('attendance-form');
+    const attendanceRecords = document.getElementById('attendance-records');
+    const clearAttendanceButton = document.getElementById('clear-attendance');
+
+    let students = JSON.parse(localStorage.getItem('students')) || [];
+    let attendance = JSON.parse(localStorage.getItem('attendance')) || [];
+
+    function saveToLocalStorage() {
+        localStorage.setItem('students', JSON.stringify(students));
+        localStorage.setItem('attendance', JSON.stringify(attendance));
+    }
+
+    function renderStudentList() {
+        studentList.innerHTML = '';
+        studentCheckboxes.innerHTML = '';
+        students.forEach(student => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                ${student.name} (${student.roll})
+                <button data-roll="${student.roll}">Delete</button>
+            `;
+            studentList.appendChild(li);
+
+            const div = document.createElement('div');
+            div.classList.add('student-item');
+            div.innerHTML = `
+                <input type="checkbox" id="${student.roll}" name="attendance" value="${student.roll}">
+                <label for="${student.roll}">${student.name}</label>
+            `;
+            studentCheckboxes.appendChild(div);
+        });
+
+        // Add delete event listeners
+        studentList.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                const roll = this.getAttribute('data-roll');
+                students = students.filter(student => student.roll !== roll);
+                saveToLocalStorage();
+                renderStudentList();
+            });
+        });
+    }
+
+    function renderAttendanceRecords() {
+        attendanceRecords.innerHTML = '';
+        attendance.forEach(record => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${record.roll}</td>
+                <td>${record.name}</td>
+                <td>${record.date}</td>
+            `;
+            attendanceRecords.appendChild(tr);
+        });
+    }
+
+    addStudentForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const name = studentNameInput.value.trim();
+        const roll = studentRollInput.value.trim();
+        if (name && roll) {
+            const student = { name, roll };
+            students.push(student);
+            saveToLocalStorage();
+            studentNameInput.value = '';
+            studentRollInput.value = '';
+            renderStudentList();
+        }
+    });
+
+    attendanceForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const selectedRolls = Array.from(document.querySelectorAll('input[name="attendance"]:checked')).map(input => input.value);
+        const date = new Date().toLocaleDateString();
+        selectedRolls.forEach(roll => {
+            const student = students.find(s => s.roll === roll);
+            if (student) {
+                const record = { roll: student.roll, name: student.name, date };
+                attendance.push(record);
+            }
+        });
+        saveToLocalStorage();
+        renderAttendanceRecords();
+    });
+
+    clearAttendanceButton.addEventListener('click', function() {
+        attendance = [];
+        saveToLocalStorage();
+        renderAttendanceRecords();
+    });
+
+    // Initial Render
+    renderStudentList();
+    renderAttendanceRecords();
+
+    // Navigation
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('nav ul li a');
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const targetSection = document.querySelector(this.getAttribute('href'));
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            targetSection.classList.remove('hidden');
+        });
+    });
+});
